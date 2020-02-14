@@ -97,7 +97,7 @@ fst.calc=function(x,y,z,A,B)
 {
   all=c(x,y,z,A,B)
   p=length(all[all==0])/length(all)
-  pX=length(x[x==0])/length(x)
+  pX=length(ceu[,1][ceu[,1]==0])/length(ceu[,1])
   pY=length(y[y==0])/length(y)
   pZ=length(z[z==0])/length(z)
   pA=length(A[A==0])/length(A)

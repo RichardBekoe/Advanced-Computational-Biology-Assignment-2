@@ -2,10 +2,15 @@ ldsel = function(ngen=500,nall=2000,init=c(0.5,0,0,0.5),rho=0,s=0,mu=0){
   hp = matrix(0,ngen,4)
   p = rep(0,4)
   
-  hp[1,] = init/sum(init)
+  hp[1,] = init/sum(init) 
   ldstat = matrix(0,ngen,2)
   
-  p1 = hp[1,1]+hp[1,2]		# allele prop at loc 1
+  # like in the wf function a matrix is created with initial values and using ngen
+  # Numbers within that matrix can change on each generations to give proportions
+  
+  
+  
+  p1 = hp[1,1]+hp[1,2]		# allele prop at loc 1 (proportion?)
   p2 = hp[1,1]+hp[1,3]		# allele prop at loc 2
   
   
@@ -18,13 +23,15 @@ ldsel = function(ngen=500,nall=2000,init=c(0.5,0,0,0.5),rho=0,s=0,mu=0){
 	
 	# mutation and selection:
 	# Filling the matrix p created above with four sets of values
+	
 	# includes pp the haplotype proportions in next generation after recomombination 
+	
 	p[1] = sum(pp*c((1-mu)^2,mu*(1-mu),mu*(1-mu),mu^2))*(1+s) 
 	p[2] = sum(pp*c(mu*(1-mu),(1-mu)^2,mu^2,mu*(1-mu)))*(1+s) 
 	p[3] = sum(pp*c(mu*(1-mu),mu^2,(1-mu)^2,mu*(1-mu)))
 	p[4] = sum(pp*c(mu^2,mu*(1-mu),mu*(1-mu),(1-mu)^2))
 	
-# sample haplotypes in NEXT GENERATION and record counts   
+# sample haplotypes in NEXT GENERATION and record counts
 	tmp = sample(1:4,nall,repl=T,prob=p)
 	for (j in 1:4) 
 	  hp[i,j]=sum(tmp==j)/nall
@@ -43,22 +50,38 @@ ldsel = function(ngen=500,nall=2000,init=c(0.5,0,0,0.5),rho=0,s=0,mu=0){
   }
   
   
-  pA=apply(hp[,1:2],1,sum)    # referring to similar code part locations as above (positions)
-  pB=apply(hp[,c(1,3)],1,sum)
+# PLOT 
+  
+  pA=apply(hp[,1:2],1,sum)  # Y input - for pA. Could query for when input = 1 or which max??
+  
+  pB=apply(hp[,c(1,3)],1,sum) 
   to.plot='yes'
   if (to.plot=='yes')
+    
+  
+# referring to similar code matrix as above (positions)
+# apply in this case uses sum to add values together
     
     
  # LOOP   
   {
 	lwd.val=2
 	par(mfrow=c(2,1),mar=c(3,2,2,1))
+	
   	matplot(hp[,1:4],type="l",xlim=c(0,ngen*1.2),ylim=c(0,1),lty=1,lwd=lwd.val,xlab="",
-  	        ylab="haplotype proportion",main=paste("LD: rho=",rho,", s=",s,", mu=",mu,sep=''))
-  	lines(1:dim(hp)[1],pA,lty=2,lwd=lwd.val,col=5)
+  	        ylab="haplotype proportion",main=paste("LD: rho=",rho,", s=",s,", mu=",mu,sep='')) 
+  	
+  	# The four haplotypes plotted
+  	# In order?? columns 1 to 4? AB Ab aB ab ??
+  	
+  	lines(1:dim(hp)[1],pA,lty=2,lwd=lwd.val,col=5) #lines(x, y = NULL, type = "l", ...)
   	lines(1:dim(hp)[1],pB,lty=3,lwd=lwd.val,col=6)
+  	
+  	# Alleles A and B plotted
+  	
   	legend(ngen,1,leg=c("AB","Ab","aB","ab","A","B"),lty=c(1,1,1,1,2,3),col=1:6,lwd=2,cex=1.4)
   	ylim.plot=c(0,max(c(ldstat)))
+  	
   	if (sum(is.na(ylim.plot))!=0) ylim.plot=c(0,1)
   	matplot(ldstat[-1,],type="l",xlim=c(0,ngen*1.2),ylim=ylim.plot,lty=1,lwd=lwd.val,col=3:4,xlab="",ylab="")
   	legend(ngen,max(ylim.plot),leg=c("|D'|","r^2"),lty=1,col=3:4,lwd=2,cex=1.4)
